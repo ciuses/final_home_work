@@ -1,0 +1,6 @@
+# created by virtualenv automatically
+/venv/
+/.idea/
+tokenators.py
+Test_api_vk.py
+
