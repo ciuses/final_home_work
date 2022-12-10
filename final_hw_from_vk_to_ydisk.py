@@ -1,3 +1,5 @@
+import time
+
 import requests
 
 from tokenators import vk_access_token as vk_token
@@ -22,7 +24,7 @@ class VK:
     def photo_info(self) -> dict:
         url = 'https://api.vk.com/method/photos.get'
         # params = {'user_ids': self.id}
-        params = {'owner_id': self.id, 'album_id': 'profile', 'extended': 1, 'photo_sizes': 1} # Фото профиля
+        # params = {'owner_id': self.id, 'album_id': 'profile', 'extended': 1, 'photo_sizes': 1} # Фото профиля
         params = {'owner_id': self.id, 'album_id': 'wall', 'extended': 1, 'photo_sizes': 1} # Фото профиля
         response = requests.get(url, params={**self.params, **params})
         return response.json()
@@ -32,4 +34,12 @@ if __name__ == '__main__':
     vk = VK(vk_token, vk_id)
     # print(vk.users_info())
     # print(vk.photo_info())
-    j_w(vk.photo_info(), 'my_j_wall.json')
+    # j_w(vk.photo_info(), 'my_j_wall.json')
+    raw_data = vk.photo_info()
+    for data_set in raw_data['response']['items']:
+        # print(time.ctime(data_set['date']).replace(' ', '_'))
+        # print(data_set['likes']['count'])
+        for img_inf in data_set['sizes']:
+            if img_inf['type'] in ['z', 'w']:
+                print(img_inf)
+
