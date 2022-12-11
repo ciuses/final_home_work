@@ -25,9 +25,36 @@ class VK:
         url = 'https://api.vk.com/method/photos.get'
         # params = {'user_ids': self.id}
         # params = {'owner_id': self.id, 'album_id': 'profile', 'extended': 1, 'photo_sizes': 1} # Фото профиля
-        params = {'owner_id': self.id, 'album_id': 'wall', 'extended': 1, 'photo_sizes': 1} # Фото профиля
+        params = {'owner_id': self.id, 'album_id': 'wall', 'extended': 1, 'photo_sizes': 1}  # Фото профиля
         response = requests.get(url, params={**self.params, **params})
         return response.json()
+
+    def preparation(self) -> dict:
+
+        dict_with_info = {}
+        for data_set in self.photo_info()['response']['items']:
+            # print(time.ctime(data_set['date']).replace(' ', '_'))
+            # print(data_set['likes']['count'])
+            data_time = data_set['date']
+            count_likes = data_set['likes']['count']  # {'count': 24, 'user_likes': 1}
+            for img_inf in data_set['sizes']:
+                if img_inf['type'] == 'z':  # in ['z', 'w']:
+                    dict_with_info[data_time] = (count_likes, img_inf['type'], img_inf['url'])
+        return dict_with_info
+
+    def downloader_picture(self, my_structure, filo_path: str = '.\\papko\\pikto\\'):
+        for data_time, likes_size_link in my_structure.items():
+            part_of_name = time.ctime(data_time).replace(' ', '_').replace(':', '_')
+            likes = likes_size_link[0]
+            size = likes_size_link[1]
+            link = likes_size_link[2]
+            full_path = f'{filo_path}{part_of_name}_{likes}.png'
+
+            response = requests.get(link)
+            picto = response.content
+            with open(full_path, 'wb') as filo:
+                filo.write(picto)
+            print(f'Загружено {full_path}')
 
 
 if __name__ == '__main__':
@@ -35,19 +62,13 @@ if __name__ == '__main__':
     # print(vk.users_info())
     # print(vk.photo_info())
     # j_w(vk.photo_info(), 'my_j_wall.json')
-    raw_data = vk.photo_info()
-    for data_set in raw_data['response']['items']:
-        # print(time.ctime(data_set['date']).replace(' ', '_'))
-        # print(data_set['likes']['count'])
-        for img_inf in data_set['sizes']:
-            # if img_inf['type'] in ['z', 'w']:
-            if img_inf['type'] == 'z':
-                print(img_inf)
+    raw_data = vk.photo_info()  # dict with all date
 
+    # for k, v in vk.preparation().items():
+    #     print(k, v)
 
+    vk.downloader_picture(vk.preparation())
 
     # TODO написать логику сортировки фоток от дублей меньшего размера
     # TODO оформить покрасивше
     # TODO посохронять как картинки или как байт объект
-
-
