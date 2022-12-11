@@ -2,6 +2,7 @@ import time
 import requests
 from tokenators import vk_access_token as vk_token
 from tokenators import vk_user_id as vk_id
+from tokenators import ya_disk_token as ya_token
 from json_writer import json_writer as j_w
 
 
@@ -51,6 +52,18 @@ class VK:
             with open(full_path, 'wb') as filo:
                 filo.write(picto)
             print(f'Загружено {full_path}')
+
+
+def all_in_one(filo, ya_name, token):
+    head = {'Authorization': f'OAuth {token}', 'Content-Type': 'application/json'}
+    param = {'path': f'disk:/Netology/{ya_name}', 'overwrite': 'true'}  # нужен полный путь к файлу с его названием
+    resp = requests.get('https://cloud-api.yandex.net:443/v1/disk/resources/upload', headers=head, params=param)
+    # print(resp, resp.text)
+    resp_dict = resp.json()
+    special_link = resp_dict.get('href')
+    with open(filo, 'rb') as filo:
+        resp = requests.put(special_link, data=filo)
+        print(resp.text, resp.status_code)
 
 
 if __name__ == '__main__':
