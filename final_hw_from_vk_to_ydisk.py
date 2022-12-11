@@ -40,6 +40,14 @@ if __name__ == '__main__':
         # print(time.ctime(data_set['date']).replace(' ', '_'))
         # print(data_set['likes']['count'])
         for img_inf in data_set['sizes']:
-            if img_inf['type'] in ['z', 'w']:
+            # if img_inf['type'] in ['z', 'w']:
+            if img_inf['type'] == 'z':
                 print(img_inf)
+
+
+
+    # TODO написать логику сортировки фоток от дублей меньшего размера
+    # TODO оформить покрасивше
+    # TODO посохронять как картинки или как байт объект
+
 

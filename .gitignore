@@ -1,6 +1,7 @@
 # created by virtualenv automatically
 /venv/
 /.idea/
+papko
 tokenators.py
 Test_api_vk.py
 
