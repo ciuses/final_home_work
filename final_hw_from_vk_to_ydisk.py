@@ -1,7 +1,5 @@
 import time
-
 import requests
-
 from tokenators import vk_access_token as vk_token
 from tokenators import vk_user_id as vk_id
 from json_writer import json_writer as j_w
@@ -30,7 +28,6 @@ class VK:
         return response.json()
 
     def preparation(self) -> dict:
-
         dict_with_info = {}
         for data_set in self.photo_info()['response']['items']:
             # print(time.ctime(data_set['date']).replace(' ', '_'))
@@ -44,12 +41,11 @@ class VK:
 
     def downloader_picture(self, my_structure, filo_path: str = '.\\papko\\pikto\\'):
         for data_time, likes_size_link in my_structure.items():
-            part_of_name = time.ctime(data_time).replace(' ', '_').replace(':', '_')
+            part_of_name = time.ctime(data_time).replace(' ', '_').replace(':', '')
             likes = likes_size_link[0]
             size = likes_size_link[1]
             link = likes_size_link[2]
             full_path = f'{filo_path}{part_of_name}_{likes}.png'
-
             response = requests.get(link)
             picto = response.content
             with open(full_path, 'wb') as filo:
@@ -63,12 +59,7 @@ if __name__ == '__main__':
     # print(vk.photo_info())
     # j_w(vk.photo_info(), 'my_j_wall.json')
     raw_data = vk.photo_info()  # dict with all date
-
-    # for k, v in vk.preparation().items():
-    #     print(k, v)
-
     vk.downloader_picture(vk.preparation())
 
     # TODO написать логику сортировки фоток от дублей меньшего размера
     # TODO оформить покрасивше
-    # TODO посохронять как картинки или как байт объект
