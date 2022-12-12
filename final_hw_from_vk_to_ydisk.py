@@ -66,20 +66,20 @@ class VK:
 
             '''Получаем картинку с API VK'''
             response_from_vk = requests.get(link)
-            print(response_from_vk.status_code)
+            print(f'Картинка получена, статус: {response_from_vk.status_code}') # Ожидаем 200
 
             '''Готовим ссылку для API yadisk и получаем её'''
             picto_object = response_from_vk.content
             param = {'path': f'disk:/Netology/{name_for_yadisk}', 'overwrite': 'true'}
             response_from_yadisk_with_link = requests.get('https://cloud-api.yandex.net:443/v1/disk/resources/upload',
                                                           headers=head, params=param)
-            print(response_from_yadisk_with_link.status_code)
+            print(f'Ссылка получена, статус код: {response_from_yadisk_with_link.status_code}') # Ожидаем 200
 
             '''Берём ссылку и заливаем файловый объект на яндекс диск'''
             resp_dict = response_from_yadisk_with_link.json()
             special_link = resp_dict.get('href')
             response_from_yadisk_with_upload = requests.put(special_link, data=picto_object)
-            print(response_from_yadisk_with_upload.text, response_from_yadisk_with_upload.status_code)
+            print(f'Файл {name_for_yadisk} загружен на Диск, код: {response_from_yadisk_with_upload.status_code}') # Ожидаем 201
 
 
 if __name__ == '__main__':
