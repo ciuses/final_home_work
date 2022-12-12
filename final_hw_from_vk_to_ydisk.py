@@ -20,7 +20,7 @@ class VK:
         response = requests.get(url, params={**self.params, **params})
         return response.json()
 
-    def photo_info(self, album: str = 'wall') -> dict:
+    def photo_info(self, album: str) -> dict:
         url = 'https://api.vk.com/method/photos.get'
         # params = {'user_ids': self.id}
         # params = {'owner_id': self.id, 'album_id': 'profile', 'extended': 1, 'photo_sizes': 1} # Фото профиля
@@ -28,9 +28,9 @@ class VK:
         response = requests.get(url, params={**self.params, **params})
         return response.json()
 
-    def preparation(self) -> dict:
+    def preparation(self, album: str = 'wall') -> dict:
         dict_with_info = {}
-        for data_set in self.photo_info()['response']['items']:
+        for data_set in self.photo_info(album)['response']['items']:
             # print(time.ctime(data_set['date']).replace(' ', '_'))
             # print(data_set['likes']['count'])
             data_time = data_set['date']
