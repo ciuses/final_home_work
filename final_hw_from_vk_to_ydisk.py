@@ -1,3 +1,4 @@
+import json
 import time
 import requests
 from tokenators import vk_access_token as vk_token
@@ -22,8 +23,6 @@ class VK:
 
     def photo_info(self, album: str) -> dict:
         url = 'https://api.vk.com/method/photos.get'
-        # params = {'user_ids': self.id}
-        # params = {'owner_id': self.id, 'album_id': 'profile', 'extended': 1, 'photo_sizes': 1} # Фото профиля
         params = {'owner_id': self.id, 'album_id': album, 'extended': 1, 'photo_sizes': 1}  # Фото профиля
         response = requests.get(url, params={**self.params, **params})
         return response.json()
@@ -31,8 +30,6 @@ class VK:
     def preparation(self, album: str = 'wall') -> dict:
         dict_with_info = {}
         for data_set in self.photo_info(album)['response']['items']:
-            # print(time.ctime(data_set['date']).replace(' ', '_'))
-            # print(data_set['likes']['count'])
             data_time = data_set['date']
             count_likes = data_set['likes']['count']  # {'count': 24, 'user_likes': 1}
             for img_inf in data_set['sizes']:
@@ -81,6 +78,23 @@ class VK:
             print(
                 f'Файл {name_for_yadisk} загружен на Диск, код: {response_from_yadisk_with_upload.status_code}')  # Ожидаем 201
 
+    def json_generator(self, dict_with_date: dict) -> list:
+        filo_list = []
+        for data_time, likes_size_link in dict_with_date.items():
+            '''Подготовка даннных из входного словаря'''
+            data_time_name = time.ctime(data_time).replace(' ', '_').replace(':', '')
+            likes = likes_size_link[0]
+            size = likes_size_link[1]
+            name_for_yadisk = f'{data_time_name}_likes_{likes}.png'
+            filo_list.append({'file_name': name_for_yadisk, 'size': size})
+
+        j_name = time.ctime().replace(' ', '_').replace(':', '')
+        with open(f'{j_name}.json', 'w', encoding='utf8') as filo:
+            json.dump(filo_list, filo, indent=4, ensure_ascii=False)
+
+        return filo_list
+
+
 
 if __name__ == '__main__':
     # vk = VK(vk_token, vk_id)
@@ -91,7 +105,10 @@ if __name__ == '__main__':
     # vk.downloader_picture(vk.preparation())
     vk = VK(vk_token, vk_id)
     my_super_dict = vk.preparation()
-    print(my_super_dict)
+    # print(my_super_dict)
+    print(vk.json_generator(my_super_dict))
+    # for mu in vk.json_generator(my_super_dict):
+    #     print(mu)
     # vk.send_to_ydisk(ya_token, my_super_dict)
 
     # TODO написать логику сортировки фоток от дублей меньшего размера
