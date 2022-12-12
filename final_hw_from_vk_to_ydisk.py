@@ -53,26 +53,45 @@ class VK:
                 filo.write(picto)
             print(f'Загружено {full_path}')
 
+    def send_to_ydisk(self, yandex_token: str, dict_with_date: dict):
+        head = {'Authorization': f'OAuth {yandex_token}', 'Content-Type': 'application/json'}
+        for data_time, likes_size_link in dict_with_date.items():
 
-def all_in_one(filo, ya_name, token):
-    head = {'Authorization': f'OAuth {token}', 'Content-Type': 'application/json'}
-    param = {'path': f'disk:/Netology/{ya_name}', 'overwrite': 'true'}  # нужен полный путь к файлу с его названием
-    resp = requests.get('https://cloud-api.yandex.net:443/v1/disk/resources/upload', headers=head, params=param)
-    # print(resp, resp.text)
-    resp_dict = resp.json()
-    special_link = resp_dict.get('href')
-    with open(filo, 'rb') as filo:
-        resp = requests.put(special_link, data=filo)
-        print(resp.text, resp.status_code)
+            '''Подготовка даннных из входного словаря'''
+            data_time_name = time.ctime(data_time).replace(' ', '_').replace(':', '')
+            likes = likes_size_link[0]
+            size = likes_size_link[1]
+            link = likes_size_link[2]
+            name_for_yadisk = f'{data_time_name}_likes_{likes}.png'
+
+            '''Получаем картинку с API VK'''
+            response_from_vk = requests.get(link)
+            print(response_from_vk.status_code)
+
+            '''Готовим ссылку для API yadisk и получаем её'''
+            picto_object = response_from_vk.content
+            param = {'path': f'disk:/Netology/{name_for_yadisk}', 'overwrite': 'true'}
+            response_from_yadisk_with_link = requests.get('https://cloud-api.yandex.net:443/v1/disk/resources/upload',
+                                                          headers=head, params=param)
+            print(response_from_yadisk_with_link.status_code)
+
+            '''Берём ссылку и заливаем файловый объект на яндекс диск'''
+            resp_dict = response_from_yadisk_with_link.json()
+            special_link = resp_dict.get('href')
+            response_from_yadisk_with_upload = requests.put(special_link, data=picto_object)
+            print(response_from_yadisk_with_upload.text, response_from_yadisk_with_upload.status_code)
 
 
 if __name__ == '__main__':
-    vk = VK(vk_token, vk_id)
+    # vk = VK(vk_token, vk_id)
     # print(vk.users_info())
     # print(vk.photo_info())
     # j_w(vk.photo_info(), 'my_j_wall.json')
-    raw_data = vk.photo_info()  # dict with all date
-    vk.downloader_picture(vk.preparation())
+    # raw_data = vk.photo_info()  # dict with all date
+    # vk.downloader_picture(vk.preparation())
+    vk = VK(vk_token, vk_id)
+    my_super_dict = vk.preparation()
+    vk.send_to_ydisk(ya_token, my_super_dict)
 
     # TODO написать логику сортировки фоток от дублей меньшего размера
     # TODO оформить покрасивше
