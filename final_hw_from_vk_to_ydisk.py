@@ -37,19 +37,6 @@ class VK:
                     dict_with_info[data_time] = (count_likes, img_inf['type'], img_inf['url'])
         return dict_with_info
 
-    def downloader_picture(self, my_structure, filo_path: str = '.\\papko\\pikto\\'):
-        for data_time, likes_size_link in my_structure.items():
-            part_of_name = time.ctime(data_time).replace(' ', '_').replace(':', '')
-            likes = likes_size_link[0]
-            size = likes_size_link[1]
-            link = likes_size_link[2]
-            full_path = f'{filo_path}{part_of_name}_{likes}.png'
-            response = requests.get(link)
-            picto = response.content
-            with open(full_path, 'wb') as filo:
-                filo.write(picto)
-            print(f'Загружено {full_path}')
-
     def send_to_ydisk(self, yandex_token: str, dict_with_date: dict):
         head = {'Authorization': f'OAuth {yandex_token}', 'Content-Type': 'application/json'}
         for data_time, likes_size_link in dict_with_date.items():
@@ -59,6 +46,7 @@ class VK:
             size = likes_size_link[1]
             link = likes_size_link[2]
             name_for_yadisk = f'{data_time_name}_likes_{likes}.png'
+            self.json_generator(dict_with_date) #TODO надо проверить
 
             '''Получаем картинку с API VK'''
             response_from_vk = requests.get(link)
@@ -95,7 +83,6 @@ class VK:
         return filo_list
 
 
-
 if __name__ == '__main__':
     # vk = VK(vk_token, vk_id)
     # print(vk.users_info())
@@ -103,13 +90,11 @@ if __name__ == '__main__':
     # j_w(vk.photo_info(), 'my_j_wall.json')
     # raw_data = vk.photo_info()  # dict with all date
     # vk.downloader_picture(vk.preparation())
+    # print(my_super_dict)
+    # print(vk.json_generator(my_super_dict))
     vk = VK(vk_token, vk_id)
     my_super_dict = vk.preparation()
-    # print(my_super_dict)
-    print(vk.json_generator(my_super_dict))
-    # for mu in vk.json_generator(my_super_dict):
-    #     print(mu)
-    # vk.send_to_ydisk(ya_token, my_super_dict)
+    vk.send_to_ydisk(ya_token, my_super_dict)
 
     # TODO написать логику сортировки фоток от дублей меньшего размера
-    # TODO оформить покрасивше
+
