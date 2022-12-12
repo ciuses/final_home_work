@@ -20,11 +20,11 @@ class VK:
         response = requests.get(url, params={**self.params, **params})
         return response.json()
 
-    def photo_info(self) -> dict:
+    def photo_info(self, album: str = 'wall') -> dict:
         url = 'https://api.vk.com/method/photos.get'
         # params = {'user_ids': self.id}
         # params = {'owner_id': self.id, 'album_id': 'profile', 'extended': 1, 'photo_sizes': 1} # Фото профиля
-        params = {'owner_id': self.id, 'album_id': 'wall', 'extended': 1, 'photo_sizes': 1}  # Фото профиля
+        params = {'owner_id': self.id, 'album_id': album, 'extended': 1, 'photo_sizes': 1}  # Фото профиля
         response = requests.get(url, params={**self.params, **params})
         return response.json()
 
@@ -56,7 +56,6 @@ class VK:
     def send_to_ydisk(self, yandex_token: str, dict_with_date: dict):
         head = {'Authorization': f'OAuth {yandex_token}', 'Content-Type': 'application/json'}
         for data_time, likes_size_link in dict_with_date.items():
-
             '''Подготовка даннных из входного словаря'''
             data_time_name = time.ctime(data_time).replace(' ', '_').replace(':', '')
             likes = likes_size_link[0]
@@ -66,20 +65,21 @@ class VK:
 
             '''Получаем картинку с API VK'''
             response_from_vk = requests.get(link)
-            print(f'Картинка получена, статус: {response_from_vk.status_code}') # Ожидаем 200
+            print(f'Картинка получена, статус: {response_from_vk.status_code}')  # Ожидаем 200
 
             '''Готовим ссылку для API yadisk и получаем её'''
             picto_object = response_from_vk.content
             param = {'path': f'disk:/Netology/{name_for_yadisk}', 'overwrite': 'true'}
             response_from_yadisk_with_link = requests.get('https://cloud-api.yandex.net:443/v1/disk/resources/upload',
                                                           headers=head, params=param)
-            print(f'Ссылка получена, статус код: {response_from_yadisk_with_link.status_code}') # Ожидаем 200
+            print(f'Ссылка получена, статус код: {response_from_yadisk_with_link.status_code}')  # Ожидаем 200
 
             '''Берём ссылку и заливаем файловый объект на яндекс диск'''
             resp_dict = response_from_yadisk_with_link.json()
             special_link = resp_dict.get('href')
             response_from_yadisk_with_upload = requests.put(special_link, data=picto_object)
-            print(f'Файл {name_for_yadisk} загружен на Диск, код: {response_from_yadisk_with_upload.status_code}') # Ожидаем 201
+            print(
+                f'Файл {name_for_yadisk} загружен на Диск, код: {response_from_yadisk_with_upload.status_code}')  # Ожидаем 201
 
 
 if __name__ == '__main__':
@@ -91,7 +91,8 @@ if __name__ == '__main__':
     # vk.downloader_picture(vk.preparation())
     vk = VK(vk_token, vk_id)
     my_super_dict = vk.preparation()
-    vk.send_to_ydisk(ya_token, my_super_dict)
+    print(my_super_dict)
+    # vk.send_to_ydisk(ya_token, my_super_dict)
 
     # TODO написать логику сортировки фоток от дублей меньшего размера
     # TODO оформить покрасивше
