@@ -4,4 +4,7 @@
 papko
 tokenators.py
 Test_api_vk.py
+json_writer.py
+filo_downloader.py
+*.json
 
