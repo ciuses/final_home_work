@@ -52,7 +52,6 @@ class VK:
         return filo_list
 
     def new_dir(self, yandex_token: str, dir_name: str) -> str:
-
         head = {'Authorization': f'OAuth {yandex_token}', 'Content-Type': 'application/json'}
         param = {'path': dir_name}
         resp = requests.put('https://cloud-api.yandex.net:443/v1/disk/resources', headers=head, params=param)
