@@ -4,7 +4,6 @@ import requests
 from tokenators import vk_access_token as vk_token
 from tokenators import vk_user_id as vk_id
 from tokenators import ya_disk_token as ya_token
-from json_writer import json_writer as j_w
 
 
 class VK:
@@ -50,7 +49,6 @@ class VK:
         j_name = time.ctime().replace(' ', '_').replace(':', '')
         with open(f'{j_name}.json', 'w', encoding='utf8') as filo:
             json.dump(filo_list, filo, indent=4, ensure_ascii=False)
-
         return filo_list
 
     def new_dir(self, yandex_token: str, dir_name: str) -> str:
@@ -65,6 +63,7 @@ class VK:
         head = {'Authorization': f'OAuth {yandex_token}', 'Content-Type': 'application/json'}
         self.json_generator(dict_with_date)
         directory_name = self.new_dir(yandex_token, dir_name)
+
         for data_time, likes_size_link in dict_with_date.items():
 
             '''Подготовка даннных из входного словаря'''
@@ -94,14 +93,6 @@ class VK:
 
 
 if __name__ == '__main__':
-    # vk = VK(vk_token, vk_id)
-    # print(vk.users_info())
-    # print(vk.photo_info())
-    # j_w(vk.photo_info(), 'my_j_wall.json')
-    # raw_data = vk.photo_info()  # dict with all date
-    # vk.downloader_picture(vk.preparation())
-    # print(my_super_dict)
-    # print(vk.json_generator(my_super_dict))
     vk = VK(vk_token, vk_id)
     my_super_dict = vk.preparation()
     vk.send_to_ydisk(ya_token, my_super_dict, 'Netology')
