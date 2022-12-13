@@ -104,6 +104,6 @@ if __name__ == '__main__':
     # print(vk.json_generator(my_super_dict))
     vk = VK(vk_token, vk_id)
     my_super_dict = vk.preparation()
-    vk.send_to_ydisk(ya_token, my_super_dict, 'Netology2')
+    vk.send_to_ydisk(ya_token, my_super_dict, 'Netology')
 
     # TODO написать логику сортировки фоток от дублей меньшего размера
